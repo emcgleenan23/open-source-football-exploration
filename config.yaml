@@ -1,0 +1,68 @@
+# ---------------------------------------------------------------------------
+# Scope + tuning knobs for the scouting pipeline.
+# Edit this file rather than the code.
+# ---------------------------------------------------------------------------
+
+# Two season strings because leagues run on different calendars:
+#   European leagues  -> Aug–May split-year season  ("2024-2025")
+#   South American    -> single calendar-year season ("2025")
+# Run `python -m src.setup_leagues` once so soccerdata recognises the non-Big-5
+# names below (see src/setup_leagues.py).
+season: "2025-2026"
+season_calendar: "2025"
+
+# FBref sits behind Cloudflare. soccerdata drives an undetected Chrome to get
+# through; running HEADLESS is what usually gets blocked, so keep this false.
+# A real Chrome window will briefly open during the pull - that's expected.
+fbref_headless: false
+
+# European leagues (Aug–May). Opta rank in the comment.
+leagues:
+  - "ENG-Premier League"   # Opta #1
+  - "ITA-Serie A"          # Opta #2
+  - "ESP-La Liga"          # Opta #3
+  - "GER-Bundesliga"       # Opta #4
+  - "FRA-Ligue 1"          # Opta #5
+  - "ENG-Championship"     # Opta #6
+  - "POR-Primeira Liga"    # Opta #7
+  - "NED-Eredivisie"       # Opta #8
+
+# South American leagues (calendar-year, use season_calendar above).
+# Note: FBref advanced stats (xG etc.) can be thinner here than the Big 5.
+leagues_calendar:
+  - "BRA-Serie A"              # Opta #9
+  - "ARG-Primera Division"     # Opta #10
+
+# ---- Eligibility gate (applied before scoring) ----
+filters:
+  min_minutes: 450          # ~5 full matches; enough for stable per-90s
+  max_minutes_share: 0.70   # <=70% of team minutes => "not a nailed-on starter"
+  max_age: 24               # good age profile
+  # Market value ceiling in EUR millions. null = ignore.
+  # Requires market_value_csv below; leave null until you've supplied the CSV.
+  max_market_value_m: 20
+
+# Transfermarkt-derived CSV for value + granular position + contract.
+# Use the Kaggle `davidcariboo/player-scores` players.csv (covers 8 of the 10
+# leagues - no Championship or Argentina). Path relative to project root.
+# Set to null to run without value/position enrichment.
+market_value_csv: "data/players.csv"
+
+# ---- Signal weights for the composite score (need not sum to 1) ----
+weights:
+  performance: 0.35     # standardised output vs positional peers
+  intensity: 0.25       # pressing / carrying / duel volume
+  misprofiling: 0.20    # profile clusters away from listed position
+  underused: 0.20       # strong per-90 on limited minutes
+
+# ---- Positional peer groups for percentile/z-score normalisation ----
+# Players are only ever compared within their own group.
+position_groups:
+  GK:  ["GK"]
+  CB:  ["DF", "CB"]
+  FB:  ["FB", "LB", "RB", "WB"]
+  MID: ["MF", "DM", "CM", "AM"]
+  WIDE: ["FW,MF", "MF,FW", "LW", "RW", "W"]
+  FWD: ["FW", "ST", "CF"]
+
+output_dir: "data/processed"

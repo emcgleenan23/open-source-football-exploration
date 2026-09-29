@@ -1,0 +1,17 @@
+pandas>=2.0
+numpy>=1.24
+pyarrow>=12.0
+pyyaml>=6.0
+scikit-learn>=1.3
+matplotlib>=3.7
+
+# Browserless FBref pull (recommended - src/pull_data_http.py):
+curl_cffi>=0.7
+beautifulsoup4>=4.12
+lxml>=5.0
+
+# Only needed for the Selenium-based pull (src/pull_data.py) + Transfermarkt:
+soccerdata>=1.9.0
+
+# Optional, for interactive exploration:
+# jupyter

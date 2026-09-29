@@ -1,0 +1,17 @@
+__pycache__/
+*.pyc
+.venv/
+venv/
+env/
+data/raw/
+data/processed/
+.soccerdata/
+*.parquet
+*.csv
+!data/.gitkeep
+.DS_Store
+.ipynb_checkpoints/
+.pytest_cache/
+downloaded_files/
+latest_logs/
+pytest-cache-files-*/
